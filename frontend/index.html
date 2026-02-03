@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donezo</title>
+    <link rel="stylesheet" href="/static/output.css">
+    <style>
+        .todo-item {
+            transition: all 0.3s ease;
+        }
+        .todo-item.completing {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Tasks ✨</h1>
+            <div class="flex gap-2">
+                <button
+                    id="tokens-btn"
+                    class="flex items-center justify-center w-10 h-10 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25z"/>
+                    </svg>
+                </button>
+                <button
+                    id="logout-btn"
+                    class="flex items-center justify-center w-10 h-10 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Add Todo Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 mb-6">
+            <form id="add-todo-form" class="flex gap-2">
+                <input
+                    type="text"
+                    id="todo-title"
+                    placeholder="Was muss gemacht werden?"
+                    required
+                    class="flex-1 min-w-0 px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                >
+                <button
+                    type="submit"
+                    class="flex-shrink-0 w-12 h-12 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-2xl font-bold cursor-pointer"
+                    title="Hinzufügen"
+                >
+                    +
+                </button>
+            </form>
+        </div>
+
+        <!-- Todos List -->
+        <div id="todos-list" class="space-y-3">
+            <!-- Todos will be rendered here -->
+        </div>
+
+        <!-- Completed Todos -->
+        <div id="completed-section" class="hidden mt-6">
+            <button id="toggle-completed" class="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-3">
+                <svg id="completed-chevron" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span id="completed-count">Erledigt (0)</span>
+            </button>
+            <div id="completed-list" class="space-y-3 hidden">
+                <!-- Completed todos will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- API Tokens Modal -->
+    <div id="tokens-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">API Tokens</h2>
+                    <button id="close-tokens-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+                <form id="create-token-form" class="flex gap-2">
+                    <input
+                        type="text"
+                        id="token-name"
+                        placeholder="Token name (optional)"
+                        class="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                    <button
+                        type="submit"
+                        class="flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        Create
+                    </button>
+                </form>
+            </div>
+
+            <div id="tokens-list" class="p-6 overflow-y-auto flex-1">
+                <!-- Tokens will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

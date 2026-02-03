@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@media (max-width: 639px) {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
