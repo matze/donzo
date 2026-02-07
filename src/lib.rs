@@ -43,7 +43,11 @@ pub fn create_app(state: AppState) -> Router {
             "/api/todos/{id}",
             delete(handlers::api::delete_existing_todo),
         )
-        .layer(tower::ServiceBuilder::new().layer(tower_http::trace::TraceLayer::new_for_http()))
+        .layer(
+            tower::ServiceBuilder::new()
+                .layer(tower_http::trace::TraceLayer::new_for_http())
+                .layer(tower_http::compression::CompressionLayer::new()),
+        )
         .with_state(state);
 
     tracing::info!("base_path: {base_path:?}");
